@@ -5,6 +5,7 @@ import com.epam.jmp.redislab.configuration.ratelimit.RateLimitRule;
 import com.epam.jmp.redislab.configuration.ratelimit.RateLimitTimeInterval;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.args.ExpiryOption;
 
 import java.util.Optional;
 import java.util.Set;
@@ -42,13 +43,9 @@ public class JedisRateLimitService implements RateLimitService {
         String clientIp = requestDescriptor.getClientIp().orElse(EMPTY);
         String requestType = requestDescriptor.getRequestType().orElse(EMPTY);
         String redisKey = String.format("requestDescriptor:%s:%s:%s", accountId, clientIp, requestType);
-        if (!jedisCluster.exists(redisKey)) {
-            // If the key does not exist, create it and set an expiration time
-            jedisCluster.setex(redisKey, timeInterval.getExpireTimeInSeconds(), "1");
-            return 1;
-        } else {
-            // If the key exists, increment its value
-            return jedisCluster.incr(redisKey);
-        }
+
+        final long requestNumber = jedisCluster.incr(redisKey);
+        jedisCluster.expire(redisKey, timeInterval.getExpireTimeInSeconds(), ExpiryOption.NX);
+        return requestNumber;
     }
 }
