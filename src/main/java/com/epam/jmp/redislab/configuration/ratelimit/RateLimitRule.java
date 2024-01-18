@@ -44,6 +44,14 @@ public class RateLimitRule {
         return requestType;
     }
 
+    public RateLimitTimeInterval getTimeInterval() {
+        return timeInterval;
+    }
+
+    public boolean isForbidden(long currentRequestNumber) {
+        return currentRequestNumber > allowedNumberOfRequests;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
