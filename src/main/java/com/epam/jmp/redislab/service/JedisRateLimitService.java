@@ -9,6 +9,7 @@ import redis.clients.jedis.args.ExpiryOption;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class JedisRateLimitService implements RateLimitService {
@@ -17,6 +18,7 @@ public class JedisRateLimitService implements RateLimitService {
     private final JedisCluster jedisCluster;
 
     private static final String EMPTY = "";
+    private static final long KEY_TTL = TimeUnit.HOURS.toSeconds(1);
 
     public JedisRateLimitService(RateLimitRuleSearcher rateLimitRuleSearcher, JedisCluster jedisCluster) {
         this.rateLimitRuleSearcher = rateLimitRuleSearcher;
@@ -42,10 +44,10 @@ public class JedisRateLimitService implements RateLimitService {
         String accountId = requestDescriptor.getAccountId().orElse(EMPTY);
         String clientIp = requestDescriptor.getClientIp().orElse(EMPTY);
         String requestType = requestDescriptor.getRequestType().orElse(EMPTY);
-        String redisKey = String.format("requestDescriptor:%s:%s:%s", accountId, clientIp, requestType);
+        String redisKey = String.format("requestDescriptor:%s:%s:%s:%s_%s", accountId, clientIp, requestType, timeInterval.name(), timeInterval.getCurrentTime());
 
         final long requestNumber = jedisCluster.incr(redisKey);
-        jedisCluster.expire(redisKey, timeInterval.getExpireTimeInSeconds(), ExpiryOption.NX);
+        jedisCluster.expire(redisKey, KEY_TTL, ExpiryOption.NX);
         return requestNumber;
     }
 }

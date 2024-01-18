@@ -1,17 +1,20 @@
 package com.epam.jmp.redislab.configuration.ratelimit;
 
+import java.time.LocalTime;
+import java.util.function.Supplier;
+
 public enum RateLimitTimeInterval {
+    MINUTE(() -> LocalTime.now().getMinute()),
+    HOUR(() -> LocalTime.now().getHour());
 
-    MINUTE(60),
-    HOUR(3600);
+    private final Supplier<Integer> currentTimeProvider;
 
-    private final long expireTimeInSeconds;
-
-    RateLimitTimeInterval(long expireTimeInSeconds) {
-        this.expireTimeInSeconds = expireTimeInSeconds;
+    RateLimitTimeInterval(Supplier<Integer> timeUnitProvider) {
+        this.currentTimeProvider = timeUnitProvider;
     }
 
-    public long getExpireTimeInSeconds() {
-        return expireTimeInSeconds;
+    public Integer getCurrentTime() {
+        return currentTimeProvider.get();
     }
+
 }
