@@ -2,7 +2,6 @@ package com.epam.jmp.redislab.api.validator;
 
 import com.epam.jmp.redislab.api.RateLimitRequest;
 import com.epam.jmp.redislab.api.RequestDescriptor;
-import org.junit.platform.commons.util.StringUtils;
 
 public class RequestValidator {
 
@@ -14,9 +13,9 @@ public class RequestValidator {
      */
     public boolean isValid(RateLimitRequest request) {
         for (RequestDescriptor descriptor : request.getDescriptors()) {
-            boolean noAccountId = StringUtils.isBlank(descriptor.getAccountId().get());
-            boolean noClientIp = StringUtils.isBlank(descriptor.getClientIp().get());
-            boolean noRequestType = StringUtils.isBlank(descriptor.getRequestType().get());
+            boolean noAccountId = !descriptor.getAccountId().isPresent() || descriptor.getAccountId().get().isEmpty();
+            boolean noClientIp = !descriptor.getClientIp().isPresent() || descriptor.getClientIp().get().isEmpty();
+            boolean noRequestType = !descriptor.getRequestType().isPresent() || descriptor.getRequestType().get().isEmpty();
             if (noAccountId && noClientIp && noRequestType) {
                 return false;
             }

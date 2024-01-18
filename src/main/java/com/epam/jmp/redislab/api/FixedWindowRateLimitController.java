@@ -22,9 +22,10 @@ public class FixedWindowRateLimitController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> shouldRateLimit(@RequestBody RateLimitRequest rateLimitRequest) {
+    public ResponseEntity<?> shouldRateLimit(@RequestBody RateLimitRequest rateLimitRequest) {
         if (!requestValidator.isValid(rateLimitRequest)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Invalid request. Each descriptor in request " +
+                    "should has at least 1 of these 3 fields: accountId, clientIp, requestType");
         }
         if (rateLimitService.shouldLimit(rateLimitRequest.getDescriptors())) {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
