@@ -2,7 +2,9 @@ package com.epam.jmp.redislab.api.validator;
 
 import com.epam.jmp.redislab.api.RateLimitRequest;
 import com.epam.jmp.redislab.api.RequestDescriptor;
+import org.springframework.stereotype.Component;
 
+@Component
 public class RequestValidator {
 
     /***

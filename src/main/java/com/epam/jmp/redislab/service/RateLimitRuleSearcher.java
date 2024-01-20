@@ -2,17 +2,18 @@ package com.epam.jmp.redislab.service;
 
 import com.epam.jmp.redislab.api.RequestDescriptor;
 import com.epam.jmp.redislab.configuration.ratelimit.RateLimitRule;
-import org.springframework.stereotype.Component;
 
-import java.util.List;
+import org.springframework.stereotype.Service;
+
+
 import java.util.Optional;
+import java.util.Set;
 
-@Component
+@Service
 public class RateLimitRuleSearcher {
 
-    private final List<RateLimitRule> rateLimitRules;
-
-    public RateLimitRuleSearcher(List<RateLimitRule> rateLimitRules) {
+    private final Set<RateLimitRule> rateLimitRules;
+    public RateLimitRuleSearcher(Set<RateLimitRule> rateLimitRules) {
         this.rateLimitRules = rateLimitRules;
     }
 
