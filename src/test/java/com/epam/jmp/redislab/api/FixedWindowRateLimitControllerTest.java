@@ -1,11 +1,13 @@
 package com.epam.jmp.redislab.api;
 
 import com.epam.jmp.redislab.utils.RateLimitResponseStats;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -31,6 +33,17 @@ class FixedWindowRateLimitControllerTest {
     private final static String IMPORTANT_CUSTOMER_ID = "ImportantCustomerId";
 
     private final RestTemplate restTemplate = new RestTemplate();
+
+    @BeforeEach
+    void init() {
+        restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
+            @Override
+            public void handleError(ClientHttpResponse response) {
+                //ignore exceptions
+            }
+        });
+    }
+
 
     @Value("http://localhost:${local.server.port}/api/v1/ratelimit/fixedwindow")
     private String apiUrl;
